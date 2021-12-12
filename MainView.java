@@ -38,7 +38,20 @@ public class MainView extends JFrame
 		for (int i = 0; i < dbProjects.size(); i++)
 		{
 			String[] projectInfo = dbProjects.get(i);
-			projects.add(new Project(projectInfo));
+//			System.out.println(dbProjects.get(i)[3]);
+			
+			if (projectInfo.length < 6)
+			{
+				projects.add(new Project(projectInfo));
+			}
+			else if (projectInfo[6].replaceAll("\\s", "").equals("VideoProject"))
+			{
+				projects.add(new VideoProject(projectInfo));
+			}
+			else if (projectInfo[6].replaceAll("\\s", "").equals("CodeProject"))
+			{
+				projects.add(new CodeProject(projectInfo));
+			}
 		}
 		
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -145,13 +158,27 @@ public class MainView extends JFrame
   		JButton backButton = new JButton("Go back");
   		// button.setPreferredSize(new Dimension(110,40));
   		MainViewButtonListener backButtonListener = new MainViewButtonListener();
-  		backButton.addActionListener(backButtonListener);	
+  		backButton.addActionListener(backButtonListener);
   		
-  
-		panel.add(nameLabel);
+
+  		panel.add(nameLabel);
 		panel.add(descLabel);
 		panel.add(dateLabel);
 		panel.add(backButton);
+		
+  		
+  		if (project instanceof VideoProject) {
+  			// temporaly just show the path in text area
+  			JTextArea videoArea = new JTextArea(((VideoProject) project).getVideoPath());
+  			panel.add(videoArea);
+  		}
+  		
+  		if (project instanceof CodeProject) {
+  			// temporaly show some random code in text area
+  			JTextArea codeArea = new JTextArea("Programming code is here\nSystem.out.println(\"Programming code is here\");");
+  			panel.add(codeArea);
+  		}
+  		
 		
 		add(panel);
 		pack();
