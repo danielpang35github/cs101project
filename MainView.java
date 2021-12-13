@@ -164,6 +164,9 @@ public class MainView extends JFrame
  
   		JLabel descLabel = new JLabel(project.getDescription());
   		descLabel.setPreferredSize(new Dimension(220,40));
+  		
+  		JLabel contributorsLabel = new JLabel("<html>Contributors:<br>" + String.join("<br>", project.getDevelopers().split(",")) + "</html>");
+  		//descLabel.setPreferredSize(new Dimension(220,40));
   
   		JLabel dateLabel = new JLabel("Created: " + project.getDateCreated());
   		// dateLabel.setPreferredSize(new Dimension(80,40));
@@ -176,6 +179,7 @@ public class MainView extends JFrame
 
   		panel.add(nameLabel);
 		panel.add(descLabel);
+		panel.add(contributorsLabel);
 		panel.add(dateLabel);
 		panel.add(backButton);
 		
