@@ -18,7 +18,8 @@ public class MainView extends JFrame
 {
 	// GUI fields
 	private JPanel panel;
-	private final int WINDOW_WIDTH = 710;	//window width
+	private JScrollPane scrPane;
+	private final int WINDOW_WIDTH = 1200;	//window width
 	private final int WINDOW_HEIGHT = 1000;	//window height
 	
 	private ArrayList<Project> projects = new ArrayList<Project>();
@@ -38,7 +39,6 @@ public class MainView extends JFrame
 		for (int i = 0; i < dbProjects.size(); i++)
 		{
 			String[] projectInfo = dbProjects.get(i);
-//			System.out.println(dbProjects.get(i)[3]);
 			
 			if (projectInfo.length < 6)
 			{
@@ -65,9 +65,12 @@ public class MainView extends JFrame
 	// view for the list of all projects
 	private void buildMainPanel()
 	{
-		// remove old pane;		
+		// remove old panel and scrollbar	
 		if (panel != null)
+		{
 			remove(panel);
+			remove(scrPane);
+		}
 		
 		// rows are equal to the number of projects			
 		int rows = projects.size();
@@ -110,9 +113,16 @@ public class MainView extends JFrame
 			
 	    }
 	    
+	    // add panel
 	    add(panel);
 	    pack();
 	    setSize(WINDOW_WIDTH, WINDOW_HEIGHT);
+	    
+	    // add scroll bar
+ 		scrPane = new JScrollPane(panel);
+ 		scrPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
+ 		scrPane.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
+ 		getContentPane().add(scrPane);
 	}
 	
 	// on btn click open the view of a specific project
@@ -134,9 +144,12 @@ public class MainView extends JFrame
 	// view for a specific project	
 	private void buildProjectPanel(int id)
 	{
-		// rempve old panel
+		// rempve old panel and scrollbar
 		if (panel != null)
+		{
 			remove(panel);
+			remove(scrPane);
+		}
 		
 		panel = new JPanel();
 		panel.setBorder(BorderFactory.createEmptyBorder(30, 20, 30, 20));
@@ -147,7 +160,7 @@ public class MainView extends JFrame
 		// create layout for the list of projects		
 		
 		JLabel nameLabel = new JLabel(project.getName());
-		 nameLabel.setPreferredSize(new Dimension(50,40));
+		nameLabel.setPreferredSize(new Dimension(50,40));
  
   		JLabel descLabel = new JLabel(project.getDescription());
   		descLabel.setPreferredSize(new Dimension(220,40));
@@ -167,22 +180,64 @@ public class MainView extends JFrame
 		panel.add(backButton);
 		
   		
+		// if it is a video project, then add video to the view
   		if (project instanceof VideoProject) {
+  			// video player is under construction
+  			// it is required to install javax.media package
+  			
   			// temporaly just show the path in text area
-  			JTextArea videoArea = new JTextArea(((VideoProject) project).getVideoPath());
+  			JTextArea videoArea = new JTextArea(("* place for videoplayer*\n" + ((VideoProject) project).getVideoPath()));
   			panel.add(videoArea);
   		}
   		
+  		// if it is a code project, then add code blocks to the view
   		if (project instanceof CodeProject) {
-  			// temporaly show some random code in text area
-  			JTextArea codeArea = new JTextArea("Programming code is here\nSystem.out.println(\"Programming code is here\");");
-  			panel.add(codeArea);
+  			String codesPath = ((CodeProject) project).getCodeFolderPath();
+  			
+  			File folder = new File(codesPath);
+  			File[] listOfFiles = folder.listFiles();
+
+  			for (File file : listOfFiles) {
+  			    if (file.isFile()) {
+  			    	
+					try {
+						JLabel fileLabel = new JLabel(file.getName());
+						 nameLabel.setPreferredSize(new Dimension(50,40));
+						 
+						Scanner reader = new Scanner(file);
+	  			    	JTextArea codeArea = new JTextArea();
+	  			    	codeArea.setEditable(false);
+	  			    	
+	  			    	while (reader.hasNextLine())
+	  			    	{
+	  			    		codeArea.append(reader.nextLine() + "\n");
+	  			    	}
+	  			    	
+	  			    	panel.add(fileLabel);
+	  		  			panel.add(codeArea);
+  		  			
+					}
+					catch (FileNotFoundException e) {
+						System.out.println("File was not found: " + file.getAbsolutePath());
+					}
+					
+  			    }
+  			}
+  			
+  			
   		}
   		
-		
+  	
+  		// add panel
 		add(panel);
 		pack();
 		setSize(WINDOW_WIDTH, WINDOW_HEIGHT);
+		
+		// add scroll bar
+		scrPane = new JScrollPane(panel);
+		scrPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
+		scrPane.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
+		getContentPane().add(scrPane);
 	}
 	
 	// on btn click open main view 
