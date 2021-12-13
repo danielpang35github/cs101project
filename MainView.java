@@ -8,6 +8,9 @@
  * 	the second one displays information of a concrete project 
  */
 import javax.swing.*;
+import javax.swing.text.Document;
+import javax.swing.text.html.HTMLEditorKit;
+
 import java.awt.event.*;
 import java.awt.*;
 import java.io.*;
@@ -77,10 +80,11 @@ public class MainView extends JFrame
 	    
 	    // create panel with margins	    	
 		panel = new JPanel();
+		panel.setBackground(Color.white);
 		panel.setBorder(BorderFactory.createEmptyBorder(30, 20, 30, 20));
 		
 		// create layout for the list of projects		
-		GridLayout gridlayout = new GridLayout(rows, 1);
+		GridLayout gridlayout = new GridLayout(0, 4);
 		gridlayout.setHgap(40);
 		gridlayout.setVgap(20);
 
@@ -152,36 +156,52 @@ public class MainView extends JFrame
 		}
 		
 		panel = new JPanel();
+		panel.setBackground(Color.white);
 		panel.setBorder(BorderFactory.createEmptyBorder(30, 20, 30, 20));
+		
+		panel.setLayout(new BoxLayout(panel, BoxLayout.PAGE_AXIS));
 		
 		// get a specific project
 		Project project = projects.get(id);
 		
+		JEditorPane jEditorPane = new JEditorPane();
+		jEditorPane.setPreferredSize(new Dimension(WINDOW_HEIGHT - 400, 400));
+		jEditorPane.setEditable(false);
+		HTMLEditorKit kit = new HTMLEditorKit();
+		jEditorPane.setEditorKit(kit);
+		
+		String htmlContent = "<html><body><h1>" + project.getName() + "</h1><br><h3>Description</h3><p>" + project.getDescription() + "</p><h3>Contributors:</h3><br>" + String.join("<br>", project.getDevelopers().split(",")) + "<p><h3>Created: </h3> " + project.getDateCreated() + "</p></body></html>";
+		Document doc = kit.createDefaultDocument();
+		jEditorPane.setDocument(doc);
+		jEditorPane.setText(htmlContent);
+		
 		// create layout for the list of projects		
 		
-		JLabel nameLabel = new JLabel(project.getName());
+		/*
+		 * JLabel nameLabel = new JLabel(project.getName());
 		nameLabel.setPreferredSize(new Dimension(50,40));
  
   		JLabel descLabel = new JLabel(project.getDescription());
   		descLabel.setPreferredSize(new Dimension(220,40));
   		
-  		JLabel contributorsLabel = new JLabel("<html>Contributors:<br>" + String.join("<br>", project.getDevelopers().split(",")) + "</html>");
+  		JLabel contributorsLabel = new JLabel("<h3>Contributors:</h3><br>" + String.join("<br>", project.getDevelopers().split(",")));
   		//descLabel.setPreferredSize(new Dimension(220,40));
   
   		JLabel dateLabel = new JLabel("Created: " + project.getDateCreated());
   		// dateLabel.setPreferredSize(new Dimension(80,40));
+  		 * */
   
   		JButton backButton = new JButton("Go back");
   		// button.setPreferredSize(new Dimension(110,40));
   		MainViewButtonListener backButtonListener = new MainViewButtonListener();
-  		backButton.addActionListener(backButtonListener);
+  		backButton.addActionListener(backButtonListener); 
   		
-
-  		panel.add(nameLabel);
+  		panel.add(backButton);
+  		panel.add(jEditorPane);
+  		/* panel.add(nameLabel);
 		panel.add(descLabel);
 		panel.add(contributorsLabel);
-		panel.add(dateLabel);
-		panel.add(backButton);
+		panel.add(dateLabel); */
 		
   		
 		// if it is a video project, then add video to the view
@@ -190,7 +210,9 @@ public class MainView extends JFrame
   			// it is required to install javax.media package
   			
   			// temporaly just show the path in text area
-  			JTextArea videoArea = new JTextArea(("* place for videoplayer*\n" + ((VideoProject) project).getVideoPath()));
+  			JTextArea videoArea = new JTextArea("* place for videoplayer*");
+  			videoArea.setPreferredSize(new Dimension(50,40));
+  			// ((VideoProject) project).getVideoPath())
   			panel.add(videoArea);
   		}
   		
@@ -206,7 +228,7 @@ public class MainView extends JFrame
   			    	
 					try {
 						JLabel fileLabel = new JLabel(file.getName());
-						 nameLabel.setPreferredSize(new Dimension(50,40));
+						fileLabel.setPreferredSize(new Dimension(50,40));
 						 
 						Scanner reader = new Scanner(file);
 	  			    	JTextArea codeArea = new JTextArea();
